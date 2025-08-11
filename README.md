@@ -9,6 +9,7 @@ It was initiated in July 2017 with data from [Anderson-Teixeira et al. (2015)](h
 
 ### [Graphics](https://github.com/forestgeo/Site-Data/tree/master/graphics)
 This folder contains some graphics/ figures summarizing ForestGEO site data.
+In some cases, R scripts or other source files are provided.
 
 ### [Global Change Data](https://github.com/forestgeo/Site-Data/tree/master/global%20change%20data)
 *Data presented in [Anderson-Teixeira et al. (2015)](http://onlinelibrary.wiley.com/doi/10.1111/gcb.12712/abstract) (59 sites):*
