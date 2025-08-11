@@ -78,3 +78,59 @@ whittaker_plot<- whittaker_base_plot() +
 
 ggsave("ForestGEO_Whittaker_Plot.png", plot = whittaker_plot,
        width = 10, height = 7, dpi = 300)
+
+message("✅  Whittaker diaagram saved: ForestGEO_Whittaker_Plot.png'")
+
+
+## 6. CREATE & SAVE CLIMATE MAPS
+# prepare site coordinates
+site_coords <- site_data_filled %>%
+  dplyr::select(Longitude, Latitude) %>%
+  na.omit()
+
+# Plot global temperature map with site points
+# Convert rasters to data frames
+temp_raster <- climate_stack[[1]]
+temp_df <- as.data.frame(temp_raster, xy = TRUE)
+names(temp_df)[3] <- "MAT"
+temp_df$MAT <- temp_df$MAT / 10  # Convert from tenths of °C to °C
+
+prec_raster <- climate_stack[[2]]
+prec_df <- as.data.frame(prec_raster, xy = TRUE)
+names(prec_df)[3] <- "MAP"
+
+# create plots 
+## temperature
+gg_temp <- ggplot() +
+  geom_raster(data = temp_df, aes(x = x, y = y, fill = MAT)) +
+  scale_fill_viridis_c(name = "Temp (°C)", na.value = "transparent") +
+  geom_point(data = site_coords, aes(x = Longitude, y = Latitude), color = "red", size = 2) +
+  labs(title = "Global Mean Annual Temperature with ForestGEO Sites",
+       x = "Longitude", y = "Latitude") +
+  coord_fixed() +
+  theme_minimal()
+
+## precipitation 
+# clip high values for visualization
+prec_df$MAP_capped <- pmin(prec_df$MAP, 4500)  # cap at 5000 mm
+
+
+gg_prec <- ggplot() +
+  geom_raster(data = prec_df, aes(x = x, y = y, fill = MAP_capped)) +
+  scale_fill_viridis_c(
+    name = "Precip (mm)",
+    na.value = "transparent"
+  ) +
+  geom_point(data = site_coords, aes(x = Longitude, y = Latitude), color = "red", size = 2) +
+  labs(
+    title = "Global Mean Annual Precipitation with ForestGEO sites",
+    x = "Longitude", y = "Latitude"
+  ) +
+  coord_fixed() +
+  theme_minimal()
+
+# save plots 
+ggsave("global_temperature_map.png", plot = gg_temp, width = 10, height = 6, dpi = 300)
+ggsave("global_precipitation_map.png", plot = gg_prec, width = 10, height = 6, dpi = 300)
+
+message("✅ Climate maps saved: 'global_temperature_map.png' and 'global_precipitation_map.png'")
